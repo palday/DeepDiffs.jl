@@ -3,7 +3,7 @@ struct DictDiff{T1, KT1, T2, KT2} <: DeepDiff
     after::T2
     removed::Set{KT1}
     added::Set{KT2}
-    changed::Dict{KT1, DeepDiff}
+    changed::Dict{Union{KT1, KT2}, DeepDiff}
     unchanged::Set{KT1}
 end
 
@@ -22,8 +22,8 @@ function deepdiff(X::AbstractDict, Y::AbstractDict)
 
     removed = setdiff(xkeys, ykeys)
     added = setdiff(ykeys, xkeys)
-    unchanged = Set{eltype(bothkeys)}()
-    changed = Dict{eltype(bothkeys), DeepDiff}()
+    unchanged = Set{eltype(xkeys)}()
+    changed = Dict{Union{eltype(xkeys), eltype(ykeys)}, DeepDiff}()
 
     for key in bothkeys
         if !isequal(X[key], Y[key])
